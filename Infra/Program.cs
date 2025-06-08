@@ -2,7 +2,7 @@
 using Amazon.CDK;
 using Infra;
 
-string service = GetEnvironmentVariable("SERVICE", "test-app");
+string service = GetEnvironmentVariable("SERVICE", "mailing-app");
 string stage = GetEnvironmentVariable("STAGE", "dev");
 string account = GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT");
 string region = GetEnvironmentVariable("CDK_DEFAULT_REGION");

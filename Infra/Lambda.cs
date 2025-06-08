@@ -32,20 +32,13 @@ internal class Lambda : Construct
 {
     private LambdaProps Props { get; set; }
     public Function LambdaFn { get; set; }
-    public Lambda(Construct scope, string id, LambdaProps props) 
+    public Lambda(Construct scope, string id, LambdaProps props)
         : base(scope, id)
     {
         Props = props;
         LambdaFn = CreateLambda(id);
 
-        var logs = new LogGroup(this, $"{id}LogGroup", new LogGroupProps()
-        {
-            LogGroupName = $"/aws/lambda/{LambdaFn.FunctionName}",
-            Retention = Props.Stage == "Production" ? RetentionDays.TWO_MONTHS : RetentionDays.ONE_WEEK,
-            RemovalPolicy = RemovalPolicy.DESTROY,
-        });
-
-        if(Props.AlarmTopic != null)
+        if (Props.AlarmTopic != null)
         {
             var alarm = new Alarm(this, $"{id}Errors", new AlarmProps()
             {

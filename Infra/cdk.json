@@ -1,16 +1,16 @@
 {
-  "app": "dotnet run --project src/Infra/Infra.csproj",
+  "app": "dotnet run --project Infra.csproj",
   "watch": {
     "include": [
       "**"
     ],
     "exclude": [
       "README.md",
-      "cdk*.json",
+      "Infra/cdk*.json",
+      "GlobalSuppressions.cs",
       "src/*/obj",
       "src/*/bin",
       "src/*.sln",
-      "src/*/GlobalSuppressions.cs",
       "src/*/*.csproj"
     ]
   },

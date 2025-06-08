@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace Mailing.Lambda.Core.Mailing;
+namespace Mailing.Lambda.Core.Mailing.Models;
 
 public class Recipient
 {
     public string Email { get; set; } = default!;
-    public RecipientType Type { get; set; }
+    public string Type { get; set; } = default!;
 }
 
 public enum RecipientType

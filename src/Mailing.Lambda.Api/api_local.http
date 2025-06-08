@@ -1,0 +1,15 @@
+@base=http://localhost:50861
+
+## Send Email
+
+POST {{base}}/v1/mails
+Content-Type: application/json
+X-API-KEY: apikey-01JX61
+
+{
+  "Subject": "dummy subject",
+  "Body": "dummy body",
+  "Recipients": [
+    { "Email": "dummy@email.com", "Type": "to"}
+  ]
+}
