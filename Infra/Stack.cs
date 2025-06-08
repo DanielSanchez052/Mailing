@@ -52,7 +52,7 @@ public class AppStack : Stack
         var db = new Database(this, "mailing-db");
 
         var mailingApiFunction = new Lambda(this, "minimal-api-lambda",
-            new LambdaProps("../src/", "Mailing.Lambda.Api", _props.Stage, _props.StackName ?? $"app-mailing-api--{_props.Stage}")
+            new LambdaProps("../src", "Lambdas/Mailing.Lambda.Api", _props.Stage, _props.StackName ?? $"app-mailing-api--{_props.Stage}")
             {
                 Handler = "Mailing.Lambda.Api",
                 AlarmTopic = alarmTopic,
@@ -68,12 +68,35 @@ public class AppStack : Stack
                 },
             });
 
+
+        var messageProcessorFunction = new Lambda(this, "message-processor-lambda",
+            new LambdaProps("../src", "Lambdas/Mailing.Lambda.MessageProcessor/Mailing.Lambda.MessageProcessor", _props.Stage, _props.StackName ?? $"message-processor--{_props.Stage}")
+            {
+                Handler = "Mailing.Lambda.MessageProcessor::Mailing.Lambda.MessageProcessor.Function::FunctionHandler",
+                AlarmTopic = alarmTopic,
+                IsAot = false,
+                MemorySize = 512,
+                Environment = new Dictionary<string, string>
+                {
+                    { "STAGE", _props.Stage },
+                    { "SERVICE", _props.Service },
+                    { "PRINCIPAL_QUEUE_URL", queue.QueueUrl },
+                    { "REGION", props?.Env?.Region ?? "us-east-1" },
+                    { "ACCOUNT", props?.Env?.Account ?? "123456789012" }
+                },
+            });
+
+
         // Grant permissions to the Lambda function to access the database
         db.ClientTable.GrantReadData(mailingApiFunction.LambdaFn);
         db.ClientTable.GrantDescribeTable(mailingApiFunction.LambdaFn);
 
         // Grant permissions to the Lambda function to access the SQS Queue
         queue.GrantSendMessages(mailingApiFunction.LambdaFn);
+
+        queue.GrantConsumeMessages(messageProcessorFunction.LambdaFn);
+        messageProcessorFunction.LambdaFn.AddEventSource(new Amazon.CDK.AWS.Lambda.EventSources.SqsEventSource(queue));
+
 
         var apiGw = new RestApi(this, "mailing-api-gateway", new RestApiProps
         {
