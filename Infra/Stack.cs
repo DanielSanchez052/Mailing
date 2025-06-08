@@ -51,10 +51,25 @@ public class AppStack : Stack
 
         var db = new Database(this, "mailing-db");
 
-        var mailingApiFunction = new Lambda(this, "minimal-api-lambda",
-            new LambdaProps("../src", "Lambdas/Mailing.Lambda.Api", _props.Stage, _props.StackName ?? $"app-mailing-api--{_props.Stage}")
+        var authorizerFunction = new Lambda(this, "mailing-authorizer-lambda",
+            new LambdaProps("../src", "Lambdas/Mailing.Lambda.Authorizer", _props.Stage, _props.StackName ?? $"app-mailing-api--{_props.Stage}")
             {
-                Handler = "Mailing.Lambda.Api",
+                Handler = "Mailing.Lambda.Authorizer::Mailing.Lambda.Authorizer.Function::FunctionHandler",
+                IsAot = false,
+                MemorySize = 512,
+                Environment = new Dictionary<string, string>
+                {
+                    { "STAGE", _props.Stage },
+                    { "SERVICE", _props.Service },
+                    { "REGION", props?.Env?.Region ?? "us-east-1" },
+                    { "ACCOUNT", props?.Env?.Account ?? "123456789012" }
+                },
+            });
+
+        var mailingApiFunction = new Lambda(this, "minimal-api-lambda",
+            new LambdaProps("../src", "Lambdas/Mailing.Lambda.SendEmail", _props.Stage, _props.StackName ?? $"app-mailing-api--{_props.Stage}")
+            {
+                Handler = "Mailing.Lambda.SendEmail::Mailing.Lambda.SendEmail.Functions_SendEmail_Generated::SendEmail",
                 AlarmTopic = alarmTopic,
                 IsAot = false,
                 MemorySize = 512,
@@ -67,7 +82,6 @@ public class AppStack : Stack
                     { "ACCOUNT", props?.Env?.Account ?? "123456789012" }
                 },
             });
-
 
         var messageProcessorFunction = new Lambda(this, "message-processor-lambda",
             new LambdaProps("../src", "Lambdas/Mailing.Lambda.MessageProcessor/Mailing.Lambda.MessageProcessor", _props.Stage, _props.StackName ?? $"message-processor--{_props.Stage}")
@@ -86,17 +100,19 @@ public class AppStack : Stack
                 },
             });
 
-
         // Grant permissions to the Lambda function to access the database
         db.ClientTable.GrantReadData(mailingApiFunction.LambdaFn);
         db.ClientTable.GrantDescribeTable(mailingApiFunction.LambdaFn);
 
+        db.ClientTable.GrantReadData(authorizerFunction.LambdaFn);
+        db.ClientTable.GrantDescribeTable(authorizerFunction.LambdaFn);
+
         // Grant permissions to the Lambda function to access the SQS Queue
         queue.GrantSendMessages(mailingApiFunction.LambdaFn);
 
+
         queue.GrantConsumeMessages(messageProcessorFunction.LambdaFn);
         messageProcessorFunction.LambdaFn.AddEventSource(new Amazon.CDK.AWS.Lambda.EventSources.SqsEventSource(queue));
-
 
         var apiGw = new RestApi(this, "mailing-api-gateway", new RestApiProps
         {
@@ -116,15 +132,23 @@ public class AppStack : Stack
             CloudWatchRole = false,
         });
 
-        var api = apiGw.Root.AddResource("api", new ResourceOptions
+        var api = apiGw.Root.AddResource("api");
+        var v1 = api.AddResource("v1");
+        var mails = v1.AddResource("mails");
+
+        mails.AddMethod("POST", new LambdaIntegration(mailingApiFunction.LambdaFn), new MethodOptions
         {
-            DefaultIntegration = new LambdaIntegration(mailingApiFunction.LambdaFn, new LambdaIntegrationOptions
+            OperationName = "SendEmail",
+            AuthorizationType = AuthorizationType.CUSTOM,
+            ApiKeyRequired = false,
+            Authorizer = new TokenAuthorizer(this, "mailing-authorizer", new TokenAuthorizerProps
             {
-                Proxy = true,
+                Handler = authorizerFunction.LambdaFn,
+                IdentitySource = "method.request.header.ApiKey",
+                AuthorizerName = "MailingAuthorizer",
+                ResultsCacheTtl = Duration.Seconds(0),
             })
         });
-        api.AddMethod("ANY");
-        api.AddProxy();
 
         // Output
         _ = new CfnOutput(this, "APIGWEndpoint", new CfnOutputProps

@@ -73,15 +73,16 @@ internal class Lambda : Construct
         };
 
         var functionProps = Props;
-        Props.Runtime = Runtime.DOTNET_8;
-        Props.Architecture = Architecture.X86_64;
-        Props.Timeout = Duration.Seconds(30);
-        Props.MemorySize = Props.MemorySize > 128 ? Props.MemorySize : 256;
-        Props.Environment = Props.Environment;
-        Props.Code = Code.FromAsset(Props.BasePath, new Amazon.CDK.AWS.S3.Assets.AssetOptions()
+        functionProps.Runtime = Runtime.DOTNET_8;
+        functionProps.Architecture = Architecture.X86_64;
+        functionProps.Timeout = Duration.Seconds(30);
+        functionProps.MemorySize = Props.MemorySize > 128 ? Props.MemorySize : 256;
+        functionProps.Environment = Props.Environment;
+        functionProps.Code = Code.FromAsset(Props.BasePath, new Amazon.CDK.AWS.S3.Assets.AssetOptions()
         {
             Bundling = buildOptions,
         });
+        functionProps.LogRetention = RetentionDays.ONE_WEEK;
 
         var lambdaFn = new Function(this, id, functionProps);
 

@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mailing.Lambda.Api", "src\L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mailing.Lambda.MessageProcessor", "src\Lambdas\Mailing.Lambda.MessageProcessor\Mailing.Lambda.MessageProcessor\Mailing.Lambda.MessageProcessor.csproj", "{CDAA02AB-CF08-43C7-B19C-19EA69112FC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mailing.Lambda.SendEmail", "src\Lambdas\Mailing.Lambda.SendEmail\Mailing.Lambda.SendEmail.csproj", "{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mailing.Lambda.Authorizer", "src\Lambdas\Mailing.Lambda.Authorizer\Mailing.Lambda.Authorizer.csproj", "{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +79,30 @@ Global
 		{CDAA02AB-CF08-43C7-B19C-19EA69112FC1}.Release|x64.Build.0 = Release|Any CPU
 		{CDAA02AB-CF08-43C7-B19C-19EA69112FC1}.Release|x86.ActiveCfg = Release|Any CPU
 		{CDAA02AB-CF08-43C7-B19C-19EA69112FC1}.Release|x86.Build.0 = Release|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Debug|x64.Build.0 = Debug|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Debug|x86.Build.0 = Debug|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Release|x64.ActiveCfg = Release|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Release|x64.Build.0 = Release|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Release|x86.ActiveCfg = Release|Any CPU
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF}.Release|x86.Build.0 = Release|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Debug|x64.Build.0 = Debug|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Debug|x86.Build.0 = Debug|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Release|x64.ActiveCfg = Release|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Release|x64.Build.0 = Release|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Release|x86.ActiveCfg = Release|Any CPU
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,5 +113,7 @@ Global
 		{71B01F59-C8F5-AF28-1637-761EB583AD39} = {54CAD398-AB8B-406E-A305-76E25591A90A}
 		{46740418-B291-4484-B2E3-59AE937934C3} = {71B01F59-C8F5-AF28-1637-761EB583AD39}
 		{CDAA02AB-CF08-43C7-B19C-19EA69112FC1} = {71B01F59-C8F5-AF28-1637-761EB583AD39}
+		{E04D09FE-B55D-45C1-A0B2-D70C1950E4CF} = {71B01F59-C8F5-AF28-1637-761EB583AD39}
+		{91D1B5E7-47FE-4115-BF6B-978F80A64E8D} = {71B01F59-C8F5-AF28-1637-761EB583AD39}
 	EndGlobalSection
 EndGlobal

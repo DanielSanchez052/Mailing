@@ -26,7 +26,7 @@ public static class EmailsApi
       )
     {
         var client = context.GetClient();
-        var response = await usecase.ExecuteAsync(request, client);
+        var response = await usecase.ExecuteAsync(request, client?.ClientId ?? string.Empty);
         if (response.IsSucess)
             return TypedResults.Ok(response);
         else

@@ -17,14 +17,14 @@ public class SendEmailEndpoint
         _busService = busService;
     }
 
-    public async Task<Response<string>> ExecuteAsync(MailingRequest? request, ClientModel? client)
+    public async Task<Response<string>> ExecuteAsync(MailingRequest? request, string clientId)
     {
         if (request == null)
             return Response<string>.InvalidRequestError();
 
-        if (client == null)
+        if (string.IsNullOrEmpty(clientId))
         {
-            _logger.LogError("Ha ocurrido un error y no ha llegado el cliente al metodo SendEmail::ExecuteAsync");
+            _logger.LogError("ClientId is null or empty in SendEmail::ExecuteAsync");
             return Response<string>.InvalidRequestError();
         }
 
@@ -34,11 +34,10 @@ public class SendEmailEndpoint
             if (errors != null && errors.Count() > 0)
                 return Response<string>.ValidationError("No se ha podido enviar el email", errors);
 
-            _logger.LogInformation($"client Email {client?.DefaultSenderEmail}");
             var queueResponse = await _busService.SendMessageAsync(new SendMailMessage
             {
                 request = request,
-                clientId = client?.ClientId ?? string.Empty
+                clientId = clientId
             });
 
             if (!queueResponse.IsSuccess)
