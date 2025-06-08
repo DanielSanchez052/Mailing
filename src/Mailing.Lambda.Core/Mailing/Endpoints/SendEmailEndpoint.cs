@@ -22,7 +22,7 @@ public class SendEmailEndpoint
         if (request == null)
             return Response<string>.InvalidRequestError();
 
-        if (request == null)
+        if (client == null)
         {
             _logger.LogError("Ha ocurrido un error y no ha llegado el cliente al metodo SendEmail::ExecuteAsync");
             return Response<string>.InvalidRequestError();

@@ -24,13 +24,6 @@ builder.Services.AddSingleton<IAmazonSQS>(s => new AmazonSQSClient(new AmazonSQS
   ServiceURL = EnvitonmentUtils.GetEnvironmentVariable("SQS_SERVICE_URL", "https://sqs.us-east-1.amazonaws.com")
 }));
 
-// builder.Services.AddAuthorization();
-// builder.Services.AddAuthentication(ApiKeySchemeOptions.Scheme)
-// .AddScheme<ApiKeySchemeOptions, ApiKeySchemeHandler>(
-//         ApiKeySchemeOptions.Scheme, options =>
-//         {
-//           options.HeaderName = "X-API-KEY";
-//         });
 
 // Add AWS Lambda support. When application is run in Lambda Kestrel is swapped out as the web server with Amazon.Lambda.AspNetCoreServer. This
 // package will act as the webserver translating request and responses between the Lambda event source and ASP.NET Core.
@@ -49,9 +42,10 @@ builder.Services.AddScoped<SendEmailEndpoint>();
 
 var app = builder.Build();
 
-// app.UseAuthentication();
-// app.UseAuthorization();
-// // app.MapControllers();
+// Registrar el middleware de autenticación por API Key
+app.UseMiddleware<ApiKeyMiddleware>();
+
+// app.MapControllers();
 
 app.UsePathBase(new PathString("/api"));
 
