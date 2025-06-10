@@ -1,29 +1,34 @@
+using System.Text.Json.Serialization;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Amazon.Lambda.RuntimeSupport;
+using Amazon.Lambda.Serialization.SystemTextJson;
 using Mailing.Lambda.Core.Mailing.Models;
 using Mailing.Lambda.Core.Mailing.Repository;
 
-// Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
 namespace Mailing.Lambda.Authorizer;
 
 public class Function
 {
-    private readonly string headerName = "ApiKey";
-    private readonly IMailingClientRepository clientRepository;
-    public Function()
+    private static async Task Main()
     {
-        var dbContext = new DynamoDBContext(new AmazonDynamoDBClient());
-        clientRepository = new MailingClientRepository(dbContext);
+        Func<APIGatewayCustomAuthorizerRequest, ILambdaContext, APIGatewayCustomAuthorizerResponse> handler = FunctionHandler;
+        await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<LambdaFunctionJsonSerializerContext>())
+            .Build()
+            .RunAsync();
     }
 
-    public APIGatewayCustomAuthorizerResponse FunctionHandler(
+    public static APIGatewayCustomAuthorizerResponse FunctionHandler(
         APIGatewayCustomAuthorizerRequest request, ILambdaContext context)
     {
         context.Logger.LogLine($"Received request: {request}");
+
+        string headerName = "ApiKey";
+        var dbContext = new AmazonDynamoDBClient();
+        var clientRepository = new MailingClientAOTRepository(dbContext);
 
         var token = request.AuthorizationToken ?? (
             request.Headers != null && request.Headers.TryGetValue(headerName, out var headerValue) ? headerValue : null);
@@ -44,7 +49,7 @@ public class Function
         return AuthorizedResponse(request, client);
     }
 
-    private APIGatewayCustomAuthorizerResponse AuthorizedResponse(
+    private static APIGatewayCustomAuthorizerResponse AuthorizedResponse(
             APIGatewayCustomAuthorizerRequest request,
             ClientModel client)
     {
@@ -78,7 +83,7 @@ public class Function
         };
     }
 
-    private APIGatewayCustomAuthorizerResponse UnauthorizedResponse() =>
+    private static APIGatewayCustomAuthorizerResponse UnauthorizedResponse() =>
            new APIGatewayCustomAuthorizerResponse()
            {
                PrincipalID = "unauthorized-user",
@@ -95,3 +100,17 @@ public class Function
 
 
 }
+
+[JsonSerializable(typeof(APIGatewayCustomAuthorizerRequest))]
+[JsonSerializable(typeof(APIGatewayCustomAuthorizerResponse))]
+[JsonSerializable(typeof(MailingRequest))]
+[JsonSerializable(typeof(ClientModel))]
+public partial class LambdaFunctionJsonSerializerContext : JsonSerializerContext
+{
+    // By using this partial class derived from JsonSerializerContext, we can generate reflection free JSON Serializer code at compile time
+    // which can deserialize our class and properties. However, we must attribute this class to tell it what types to generate serialization code for.
+    // See https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-source-generation
+}
+
+
+

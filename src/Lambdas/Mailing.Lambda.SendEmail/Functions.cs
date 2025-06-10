@@ -5,8 +5,12 @@ using Mailing.Lambda.Core.Mailing.Models;
 using Mailing.Lambda.Core.Types;
 using Mailing.Lambda.Core.Mailing.Endpoints;
 using Amazon.Lambda.APIGatewayEvents;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Mailing.Lambda.Core.Utils;
+using Amazon.Lambda.Serialization.SystemTextJson;
 
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
+[assembly: LambdaSerializer(typeof(SourceGeneratorLambdaJsonSerializer<AppSerializerContext>))]
 
 namespace Mailing.Lambda.SendEmail;
 
@@ -62,7 +66,7 @@ public class Functions
         APIGatewayProxyRequest proxyRequest
         )
     {
-        string? clientId = proxyRequest.RequestContext.Authorizer.GetValueOrDefault("UserId")?.ToString();
+        string clientId = proxyRequest.RequestContext.Authorizer.GetValueOrDefault("UserId")?.ToString();
         if (string.IsNullOrEmpty(clientId))
         {
             context.Logger.LogLine("Client ID is missing in the request context.");

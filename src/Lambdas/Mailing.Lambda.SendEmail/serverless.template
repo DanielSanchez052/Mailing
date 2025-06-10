@@ -26,7 +26,7 @@
           "AWSLambdaBasicExecutionRole"
         ],
         "PackageType": "Zip",
-        "Handler": "Mailing.Lambda.SendEmail::Mailing.Lambda.SendEmail.Functions_Default_Generated::Default",
+        "Handler": "Mailing.Lambda.SendEmail",
         "Events": {
           "RootGet": {
             "Type": "Api",
@@ -34,6 +34,11 @@
               "Path": "api/v1/mails",
               "Method": "GET"
             }
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "ANNOTATIONS_HANDLER": "Default"
           }
         }
       }
@@ -61,7 +66,7 @@
           "AWSLambdaBasicExecutionRole"
         ],
         "PackageType": "Zip",
-        "Handler": "Mailing.Lambda.SendEmail::Mailing.Lambda.SendEmail.Functions_SendEmail_Generated::SendEmail",
+        "Handler": "Mailing.Lambda.SendEmail",
         "Events": {
           "RootPost": {
             "Type": "Api",
@@ -69,6 +74,11 @@
               "Path": "api/v1/mails",
               "Method": "POST"
             }
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "ANNOTATIONS_HANDLER": "SendEmail"
           }
         }
       }

@@ -1,18 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <AWSProjectType>Lambda</AWSProjectType>
-    <!-- This property makes the build directory similar to a publish directory and helps the AWS .NET Lambda Mock Test Tool find project dependencies. -->
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <!-- Generate ready to run images during publishing to improvement cold starts. -->
-    <PublishReadyToRun>true</PublishReadyToRun>
+    <OutputType>exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<AWSProjectType>Lambda</AWSProjectType>
+		<PublishAot>true</PublishAot>
+		<EventSourceSupport>false</EventSourceSupport>
+		<UseSystemResourceKeys>true</UseSystemResourceKeys>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<StripSymbols>true</StripSymbols>
+		<OptimizationPreference>Speed</OptimizationPreference>
+
+     <!-- Avoid the copious logging from the native AOT compiler -->
+    <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+     <!-- Set trimming level: full is most aggressive -->
+    <TrimMode>full</TrimMode>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.5.0" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.6.0" />
+    <PackageReference Include="Amazon.Lambda.Logging.AspNetCore" Version="4.0.0" />
+    <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.12.0" />
     <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.1" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.4" />
     <PackageReference Include="Amazon.Lambda.Annotations" Version="1.6.1" />
@@ -28,4 +36,7 @@
   <ItemGroup>
     <ProjectReference Include="../../Mailing.Lambda.Core/Mailing.Lambda.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+		<TrimmerRootAssembly Include="AWSSDK.Core" />
+	</ItemGroup>
 </Project>

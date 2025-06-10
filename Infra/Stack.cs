@@ -51,37 +51,38 @@ public class AppStack : Stack
 
         var db = new Database(this, "mailing-db");
 
-        var authorizerFunction = new Lambda(this, "mailing-authorizer-lambda",
-            new LambdaProps("../src", "Lambdas/Mailing.Lambda.Authorizer", _props.Stage, _props.StackName ?? $"app-mailing-api--{_props.Stage}")
-            {
-                Handler = "Mailing.Lambda.Authorizer::Mailing.Lambda.Authorizer.Function::FunctionHandler",
-                IsAot = false,
-                MemorySize = 512,
-                Environment = new Dictionary<string, string>
-                {
-                    { "STAGE", _props.Stage },
-                    { "SERVICE", _props.Service },
-                    { "REGION", props?.Env?.Region ?? "us-east-1" },
-                    { "ACCOUNT", props?.Env?.Account ?? "123456789012" }
-                },
-            });
-
         var mailingApiFunction = new Lambda(this, "minimal-api-lambda",
             new LambdaProps("../src", "Lambdas/Mailing.Lambda.SendEmail", _props.Stage, _props.StackName ?? $"app-mailing-api--{_props.Stage}")
             {
-                Handler = "Mailing.Lambda.SendEmail::Mailing.Lambda.SendEmail.Functions_SendEmail_Generated::SendEmail",
+                Handler = "Mailing.Lambda.SendEmail",
                 AlarmTopic = alarmTopic,
-                IsAot = false,
-                MemorySize = 512,
+                IsAot = true,
+                MemorySize = 1024,
                 Environment = new Dictionary<string, string>
                 {
                     { "STAGE", _props.Stage },
                     { "SERVICE", _props.Service },
                     { "PRINCIPAL_QUEUE_URL", queue.QueueUrl },
                     { "REGION", props?.Env?.Region ?? "us-east-1" },
-                    { "ACCOUNT", props?.Env?.Account ?? "123456789012" }
+                    { "ACCOUNT", props?.Env?.Account ?? "123456789012" },
+                    { "ANNOTATIONS_HANDLER", "SendEmail"}
                 },
             });
+
+        var authorizerFunction = new Lambda(this, "mailing-authorizer-lambda",
+           new LambdaProps("../src", "Lambdas/Mailing.Lambda.Authorizer", _props.Stage, _props.StackName ?? $"app-mailing-api--{_props.Stage}")
+           {
+               Handler = "Mailing.Lambda.Authorizer",
+               IsAot = true,
+               MemorySize = 512,
+               Environment = new Dictionary<string, string>
+               {
+                    { "STAGE", _props.Stage },
+                    { "SERVICE", _props.Service },
+                    { "REGION", props?.Env?.Region ?? "us-east-1" },
+                    { "ACCOUNT", props?.Env?.Account ?? "123456789012" }
+               },
+           });
 
         var messageProcessorFunction = new Lambda(this, "message-processor-lambda",
             new LambdaProps("../src", "Lambdas/Mailing.Lambda.MessageProcessor/Mailing.Lambda.MessageProcessor", _props.Stage, _props.StackName ?? $"message-processor--{_props.Stage}")

@@ -1,0 +1,57 @@
+{
+  "ClientId": {
+    "S": "01JX61BHMDXETWQ63QZMQB86CR"
+  },
+  "ApiKey": {
+    "S": "apikey-01JX61"
+  },
+  "ClientName": {
+    "S": "Test"
+  },
+  "CreatedAt": {
+    "S": "sábado, 7 de junio de 2025"
+  },
+  "DefaultSenderEmail": {
+    "S": "email@email.com"
+  },
+  "Providers": {
+    "L": [
+      {
+        "M": {
+          "Config": {
+            "M": {
+              "HOST": {
+                "S": "custom.smtp"
+              },
+              "PORT": {
+                "S": "587"
+              }
+            }
+          },
+          "Credentials": {
+            "M": {
+              "PASSWORD": {
+                "S": "a3bb89e4-a918-4df6-8a0b-736f22953ee3"
+              },
+              "USERNAME": {
+                "S": "a3bb89e4-a918-4df6-8a0b-736f22953ee3"
+              }
+            }
+          },
+          "Priority": {
+            "N": "1"
+          },
+          "ProviderId": {
+            "N": "1"
+          },
+          "ProviderName": {
+            "S": "SMTP"
+          }
+        }
+      }
+    ]
+  },
+  "Status": {
+    "S": "Inactive"
+  }
+}

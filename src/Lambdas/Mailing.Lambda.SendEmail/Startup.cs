@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.SQS;
@@ -23,11 +24,6 @@ public class Startup
     /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
-        // var builder = new ConfigurationBuilder()
-        //     .SetBasePath(Directory.GetCurrentDirectory())
-        //     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        //     .AddEnvironmentVariables();
-
         services.AddSingleton<IDynamoDBContext, DynamoDBContext>(p => new DynamoDBContext(new AmazonDynamoDBClient()));
         services.AddSingleton<IAmazonSQS>(s => new AmazonSQSClient(new AmazonSQSConfig
         {
@@ -48,15 +44,17 @@ public class Startup
         services.AddLogging(loggingBuilder =>
         {
             loggingBuilder.ClearProviders();
-            loggingBuilder.AddJsonConsole(options =>
+            loggingBuilder.AddLambdaLogger(new LambdaLoggerOptions
             {
-                options.IncludeScopes = true;
-                options.UseUtcTimestamp = true;
-                options.TimestampFormat = "hh:mm:ss ";
+                IncludeCategory = true,
+                IncludeLogLevel = true,
+                IncludeEventId = true,
+                IncludeException = true,
+                IncludeNewline = true,
+                IncludeScopes = true
             });
-            loggingBuilder.AddDebug();
-            loggingBuilder.SetMinimumLevel(LogLevel.Information);
         });
+
 
         //// Add AWS Systems Manager as a potential provider for the configuration. This is 
         //// available with the Amazon.Extensions.Configuration.SystemsManager NuGet package.

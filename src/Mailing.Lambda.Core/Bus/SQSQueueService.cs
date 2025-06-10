@@ -1,7 +1,7 @@
-using System;
 using System.Text.Json;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using Mailing.Lambda.Core.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace Mailing.Lambda.Core.Bus;
@@ -18,14 +18,13 @@ public class SQSQueueService : IBusService
     _sqsClient = sqsClient ?? throw new ArgumentNullException(nameof(sqsClient));
     _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     _queueUrl = queueUrl ?? throw new ArgumentNullException(nameof(queueUrl));
-    Console.WriteLine($"SQS Queue URL: {_queueUrl}");
   }
 
   public async Task<QueueMessageResponse> SendMessageAsync<T>(T message)
   {
     try
     {
-      var messageBody = JsonSerializer.Serialize(message);
+      var messageBody = JsonSerializer.Serialize(message, AppSerializerContext.Default.GetTypeInfo(typeof(T)));
       var sendMessageRequest = new SendMessageRequest
       {
         QueueUrl = _queueUrl,
